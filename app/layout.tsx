@@ -18,7 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-br" className="dark">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="m-auto p-2 sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

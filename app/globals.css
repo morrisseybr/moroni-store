@@ -91,7 +91,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground m-auto p-2 sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1 {
