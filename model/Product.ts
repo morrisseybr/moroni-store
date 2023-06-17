@@ -14,6 +14,7 @@ export const PRODUCT_TYPE = [
 export const PRODUCT_GENDER = ["male", "female", "unisex"] as const;
 
 export const PRODUCT_SIZE = [
+  "number",
   "xs",
   "s",
   "m",
@@ -31,6 +32,7 @@ export const ProductSchema = z.object({
   type: z.enum(PRODUCT_TYPE),
   gender: z.enum(PRODUCT_GENDER),
   size: z.enum(PRODUCT_SIZE),
+  number: z.number().positive().nullable(),
   price: z.number().positive(),
   stock: z.number().nonnegative(),
 });

@@ -2,18 +2,16 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input, InputCurrency } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PRODUCT_SIZE, Product, ProductSchema } from "@/model/Product";
+import { Product, ProductSchema } from "@/model/Product";
 import {
   Select,
   SelectContent,
@@ -21,8 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "@/components/i18n";
 
 export default function Product() {
+  const { t } = useTranslation();
   const form = useForm<Product>({
     resolver: zodResolver(ProductSchema.omit({ id: true })),
     defaultValues: {
@@ -84,7 +84,7 @@ export default function Product() {
                 <SelectContent>
                   {ProductSchema.shape.type.options.sort().map((option) => (
                     <SelectItem value={option} key={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                      {t("accessories")}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -107,7 +107,7 @@ export default function Product() {
                 <SelectContent>
                   {ProductSchema.shape.gender.options.sort().map((option) => (
                     <SelectItem value={option} key={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                      {t(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -130,11 +130,42 @@ export default function Product() {
                 <SelectContent>
                   {ProductSchema.shape.size.options.map((option) => (
                     <SelectItem value={option} key={option}>
-                      {option.toUpperCase()}
+                      {t(option)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+            </FormItem>
+          )}
+        />
+        {form.getValues("size") === "number" && (
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Número</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    disabled={form.getValues("size") !== "number"}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Preço</FormLabel>
+              <FormControl>
+                <InputCurrency min={0} step={0.01} />
+              </FormControl>
             </FormItem>
           )}
         />
