@@ -1,6 +1,6 @@
-const LOCALES = ["pt-BR"] as const;
+const LOCALE = ["pt-BR"] as const;
 
-const LOCALE_KEYS = [
+const KEY = [
   "shirt",
   "pants",
   "shoes",
@@ -23,8 +23,8 @@ const LOCALE_KEYS = [
   "unique",
 ] as const;
 
-export type LocaleKeys = (typeof LOCALE_KEYS)[number];
+export type Key = (typeof KEY)[number];
 
-export type Locales = (typeof LOCALES)[number];
+export type Locale = (typeof LOCALE)[number];
 
-export type Locale = Record<LocaleKeys, string>;
+export type Dictionary = Record<Key, string>;

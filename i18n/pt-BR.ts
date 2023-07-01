@@ -1,6 +1,6 @@
-import { Locale } from "./locale";
+import { Dictionary } from "./locale";
 
-const LOCALE_PT_BR: Locale = {
+const DICTIONARY_PT_BR: Dictionary = {
   shirt: "Camisa",
   pants: "Calça",
   shoes: "Sapato",
@@ -23,4 +23,4 @@ const LOCALE_PT_BR: Locale = {
   unique: "Único",
 };
 
-export default LOCALE_PT_BR;
+export default DICTIONARY_PT_BR;

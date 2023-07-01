@@ -1,17 +1,5 @@
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { Input, InputCurrency } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Product, ProductSchema } from "@/model/Product";
 import {
   Select,
   SelectContent,
@@ -19,158 +7,82 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTranslation } from "@/components/i18n";
+import { Label } from "@/components/ui/label";
+import { Fieldset } from "@/components/ui/fieldset";
+import createProduct from "@/actions/create-product";
+import { PRODUCT_GENDER, PRODUCT_SIZE, PRODUCT_TYPE } from "@/model/Product";
+import { InputCurrency } from "@/components/ui/input-currency";
+// import getTranslation from "@/components/i18n";
 
-export default function Product() {
-  const { t } = useTranslation();
-  const form = useForm<Product>({
-    resolver: zodResolver(ProductSchema.omit({ id: true })),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-      stock: 0,
-    },
-  });
-
-  function handleSubmit(values: Product) {
-    console.log(values);
-  }
-
+export default async function Product() {
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit, (error) =>
-          console.log(error)
-        )}
-        className="flex flex-col gap-4"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descrição</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tipo</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ProductSchema.shape.type.options.sort().map((option) => (
-                    <SelectItem value={option} key={option}>
-                      {t("accessories")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Gênero</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ProductSchema.shape.gender.options.sort().map((option) => (
-                    <SelectItem value={option} key={option}>
-                      {t(option)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="size"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tamanho</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ProductSchema.shape.size.options.map((option) => (
-                    <SelectItem value={option} key={option}>
-                      {t(option)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
-        {form.getValues("size") === "number" && (
-          <FormField
-            control={form.control}
-            name="number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Número</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    disabled={form.getValues("size") !== "number"}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        )}
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Preço</FormLabel>
-              <FormControl>
-                <InputCurrency min={0} step={0.01} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Entrar</Button>
-      </form>
-    </Form>
+    <form className="flex flex-col gap-4" action={createProduct}>
+      <Fieldset>
+        <Label htmlFor="name">Nome</Label>
+        <Input type="text" name="name" required />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="description">Descrição</Label>
+        <Input type="text" name="description" />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="type">Tipo</Label>
+        <Select name="type" required>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione um" />
+          </SelectTrigger>
+          <SelectContent>
+            {PRODUCT_TYPE.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="gender">Gênero</Label>
+        <Select name="gender" required>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione um" />
+          </SelectTrigger>
+          <SelectContent>
+            {PRODUCT_GENDER.map((gender) => (
+              <SelectItem key={gender} value={gender}>
+                {gender}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="size">Tamanho</Label>
+        <Select name="size" required>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione um" />
+          </SelectTrigger>
+          <SelectContent>
+            {PRODUCT_SIZE.map((size) => (
+              <SelectItem key={size} value={size}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="number">Número</Label>
+        <Input type="text" name="number" />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="stock">Estoque</Label>
+        <Input type="number" step={1} name="stock" required />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="price">Preço</Label>
+        <InputCurrency name="price" required />
+      </Fieldset>
+      <Button type="submit">Salvar</Button>
+    </form>
   );
 }
