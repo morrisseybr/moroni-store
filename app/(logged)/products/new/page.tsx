@@ -14,23 +14,12 @@ import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
-import getProduct from "@/actions/get-product";
-import updateProduct from "@/actions/update-product";
-import { redirect } from "next/navigation";
 // import getTranslation from "@/components/i18n";
 
-type ProductDetailsProps = {
-  params: {
-    id: string;
-  };
-};
-
-export default async function ProductDetails({ params }: ProductDetailsProps) {
-  const product = await getProduct(params.id);
-
+export default async function Product() {
   const handleFormAction = async (data: FormData) => {
     "use server";
-    await updateProduct(product.id, data);
+    await createProduct(data);
   };
 
   return (
@@ -38,31 +27,27 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
       <header className="py-2 mb-2 flex justify-between items-center">
         <div className="flex gap-2 items-center justify-start">
           <BackButton />
-          <h3>Editar produto</h3>
+          <h3>Novo produto</h3>
         </div>
       </header>
       <Form
         className="flex flex-col gap-4"
         action={handleFormAction}
         successTitle="Sucesso!"
-        successMessage="Produto atualizado com sucesso."
+        successMessage="Produto criado com sucesso."
         successRedirect="/products"
       >
         <Fieldset>
           <Label htmlFor="name">Nome</Label>
-          <Input type="text" name="name" required defaultValue={product.name} />
+          <Input type="text" name="name" required />
         </Fieldset>
         <Fieldset>
           <Label htmlFor="description">Descrição</Label>
-          <Input
-            type="text"
-            name="description"
-            defaultValue={product.description}
-          />
+          <Input type="text" name="description" />
         </Fieldset>
         <Fieldset>
           <Label htmlFor="type">Tipo</Label>
-          <Select name="type" required defaultValue={product.type}>
+          <Select name="type" required>
             <SelectTrigger>
               <SelectValue placeholder="Selecione um" />
             </SelectTrigger>
@@ -77,7 +62,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
         </Fieldset>
         <Fieldset>
           <Label htmlFor="gender">Gênero</Label>
-          <Select name="gender" required defaultValue={product.gender}>
+          <Select name="gender" required>
             <SelectTrigger>
               <SelectValue placeholder="Selecione um" />
             </SelectTrigger>
@@ -92,7 +77,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
         </Fieldset>
         <Fieldset>
           <Label htmlFor="size">Tamanho</Label>
-          <Select name="size" required defaultValue={product.size}>
+          <Select name="size" required>
             <SelectTrigger>
               <SelectValue placeholder="Selecione um" />
             </SelectTrigger>
@@ -107,25 +92,15 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
         </Fieldset>
         <Fieldset>
           <Label htmlFor="number">Número</Label>
-          <Input
-            type="text"
-            name="number"
-            defaultValue={product.number || undefined}
-          />
+          <Input type="text" name="number" />
         </Fieldset>
         <Fieldset>
           <Label htmlFor="stock">Estoque</Label>
-          <Input
-            type="number"
-            step={1}
-            name="stock"
-            required
-            defaultValue={product.stock}
-          />
+          <Input type="number" step={1} name="stock" required />
         </Fieldset>
         <Fieldset>
           <Label htmlFor="price">Preço</Label>
-          <InputCurrency name="price" required defaultValue={product.price} />
+          <InputCurrency name="price" required />
         </Fieldset>
         <Button type="submit">Salvar</Button>
       </Form>

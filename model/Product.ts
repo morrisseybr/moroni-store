@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const PRODUCT_TYPE = [
+export const ProductType = z.enum([
   "shirt",
   "pants",
   "shoes",
@@ -9,11 +9,13 @@ export const PRODUCT_TYPE = [
   "underwear",
   "accessories",
   "other",
-] as const;
+]);
+export type ProductType = z.infer<typeof ProductType>;
 
-export const PRODUCT_GENDER = ["male", "female", "unisex"] as const;
+export const ProductGender = z.enum(["male", "female", "unisex"]);
+export type ProductGender = z.infer<typeof ProductGender>;
 
-export const PRODUCT_SIZE = [
+export const ProductSize = z.enum([
   "number",
   "xs",
   "s",
@@ -23,15 +25,16 @@ export const PRODUCT_SIZE = [
   "xxl",
   "xxxl",
   "unique",
-] as const;
+]);
+export type ProductSize = z.infer<typeof ProductSize>;
 
 export const ProductSchema = z.object({
-  id: z.string().uuid(),
+  id: z.coerce.string().nonempty(),
   name: z.string().nonempty(),
-  description: z.string().nonempty(),
-  type: z.enum(PRODUCT_TYPE),
-  gender: z.enum(PRODUCT_GENDER),
-  size: z.enum(PRODUCT_SIZE),
+  description: z.string(),
+  type: ProductType,
+  gender: ProductGender,
+  size: ProductSize,
   number: z.number().positive().nullable(),
   price: z.number().positive(),
   stock: z.number().nonnegative(),

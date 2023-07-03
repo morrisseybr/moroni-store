@@ -25,12 +25,12 @@ const createProductSchema = z.object({
   stock: z.coerce.number().nonnegative(),
 });
 
-export default async function createProduct(formData: FormData) {
+export default async function updateProduct(id: string, formData: FormData) {
   const data = createProductSchema.parse(
     Object.fromEntries(formData.entries())
   );
   const db = getFirestore();
-  const docRef = db.collection("products").doc();
-  const newProduct = ProductSchema.parse({ id: docRef.id, ...data });
-  await docRef.set(newProduct);
+  const docRef = db.collection("products").doc(id);
+  const updatedProduct = ProductSchema.parse({ id: docRef.id, ...data });
+  await docRef.set(updatedProduct);
 }
