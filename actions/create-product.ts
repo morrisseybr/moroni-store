@@ -1,5 +1,5 @@
 "use server";
-import { ProductSchema } from "@/model/Product";
+import { ProductSchema, ProductSummarySchema } from "@/model/Product";
 import * as z from "zod";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -33,4 +33,9 @@ export default async function createProduct(formData: FormData) {
   const docRef = db.collection("products").doc();
   const newProduct = ProductSchema.parse({ id: docRef.id, ...data });
   await docRef.set(newProduct);
+  const newProductSummary = ProductSummarySchema.parse(newProduct);
+  const productsSummaryRef = db.collection("products").doc("summary");
+  await productsSummaryRef.update({
+    [newProductSummary.id]: newProductSummary,
+  });
 }

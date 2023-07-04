@@ -41,3 +41,12 @@ export const ProductSchema = z.object({
 });
 
 export type Product = z.infer<typeof ProductSchema>;
+
+export const ProductSummarySchema = ProductSchema.pick({
+  id: true,
+  name: true,
+  stock: true,
+  price: true,
+});
+
+export type ProductSummary = z.infer<typeof ProductSummarySchema>;

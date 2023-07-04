@@ -2,7 +2,6 @@
 
 import {
   ColumnDef,
-  PaginationState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -18,55 +17,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "./button";
-import { useEffect, useState } from "react";
 
 interface DataTableProps<TData extends { id: string }, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  pageSize: number;
-  totalPages: number;
-  onGetNextPage: (lastDataId: string, pageSize: number) => Promise<void>;
-  onGetPreviousPage: (firstDataId: string, pageSize: number) => Promise<void>;
 }
 
 export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
-  pageSize,
-  totalPages,
-  onGetNextPage,
-  onGetPreviousPage,
 }: DataTableProps<TData, TValue>) {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    pageCount: totalPages,
-    state: { pagination },
-    onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
   });
-
-  const handleGetNextPage = async () => {
-    if (table.getCanNextPage()) {
-      const lastDataId = table.getRowModel().rows?.[pageSize - 1]?.original.id;
-      await onGetNextPage(lastDataId, pageSize);
-    }
-    table.nextPage();
-  };
-
-  const handleGetPreviousPage = async () => {
-    if (table.getCanPreviousPage()) {
-      const firstDataId = table.getRowModel().rows?.[0]?.original.id;
-      await onGetPreviousPage(firstDataId, pageSize);
-    }
-    table.previousPage();
-  };
 
   return (
     <div>
@@ -124,7 +90,7 @@ export function DataTable<TData extends { id: string }, TValue>({
         <Button
           variant="outline"
           size="sm"
-          onClick={handleGetPreviousPage}
+          onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
           Anterior
@@ -132,7 +98,7 @@ export function DataTable<TData extends { id: string }, TValue>({
         <Button
           variant="outline"
           size="sm"
-          onClick={handleGetNextPage}
+          onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
           Próxima
