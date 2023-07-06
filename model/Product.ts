@@ -35,8 +35,8 @@ export const ProductSchema = z.object({
   type: ProductType,
   gender: ProductGender,
   size: ProductSize,
-  number: z.number().positive().nullable(),
-  price: z.number().positive(),
+  number: z.number().nonnegative().nullable(),
+  price: z.number().nonnegative(),
   stock: z.number().nonnegative(),
 });
 

@@ -92,8 +92,9 @@ export default async function Product() {
         </Fieldset>
         <Fieldset>
           <Label htmlFor="number">Número</Label>
-          <Input type="text" name="number" />
+          <Input type="number" step={1} min={0} name="number" />
         </Fieldset>
+
         <Fieldset>
           <Label htmlFor="stock">Estoque</Label>
           <Input type="number" step={1} name="stock" required />

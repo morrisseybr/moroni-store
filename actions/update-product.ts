@@ -3,13 +3,13 @@ import { ProductSchema, ProductSummarySchema } from "@/model/Product";
 import * as z from "zod";
 import { getFirestore } from "firebase-admin/firestore";
 
-const createProductSchema = z.object({
+const updateProductSchema = z.object({
   name: z.coerce.string().nonempty(),
   description: z.coerce.string(),
   type: z.coerce.string().nonempty(),
   gender: z.coerce.string().nonempty(),
   size: z.coerce.string().nonempty(),
-  number: z.coerce.number().positive().nullable(),
+  number: z.coerce.number().nonnegative().nullable(),
   price: z.coerce
     .string()
     .nonempty()
@@ -21,12 +21,12 @@ const createProductSchema = z.object({
           .replace(/[^0-9.-]+/g, "")
       )
     )
-    .pipe(z.number().positive()),
+    .pipe(z.number().nonnegative()),
   stock: z.coerce.number().nonnegative(),
 });
 
 export default async function updateProduct(id: string, formData: FormData) {
-  const data = createProductSchema.parse(
+  const data = updateProductSchema.parse(
     Object.fromEntries(formData.entries())
   );
   const db = getFirestore();
