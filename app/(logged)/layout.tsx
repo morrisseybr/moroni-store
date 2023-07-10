@@ -17,6 +17,7 @@ export default async function DashboardLayout({
         <nav className="flex gap-4">
           <Link href="/login" className="link">
             {session ? "Logout" : "Login"}
+            {session?.user?.allowed && " (admin)"}
           </Link>
         </nav>
       </header>
