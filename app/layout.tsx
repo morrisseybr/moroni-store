@@ -1,6 +1,5 @@
 import moment from "moment";
 import { Inter } from "next/font/google";
-import "@/config/firebase";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 

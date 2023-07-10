@@ -29,7 +29,7 @@ export const ProductSize = z.enum([
 export type ProductSize = z.infer<typeof ProductSize>;
 
 export const ProductSchema = z.object({
-  id: z.coerce.string().nonempty(),
+  id: z.string().uuid(),
   name: z.string().nonempty(),
   description: z.string(),
   type: ProductType,

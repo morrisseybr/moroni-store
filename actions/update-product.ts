@@ -1,7 +1,7 @@
 "use server";
 import { ProductSchema, ProductSummarySchema } from "@/model/Product";
+import { PrismaClient } from "@prisma/client";
 import * as z from "zod";
-import { getFirestore } from "firebase-admin/firestore";
 
 const updateProductSchema = z.object({
   name: z.coerce.string().nonempty(),
@@ -29,13 +29,13 @@ export default async function updateProduct(id: string, formData: FormData) {
   const data = updateProductSchema.parse(
     Object.fromEntries(formData.entries())
   );
-  const db = getFirestore();
-  const docRef = db.collection("products").doc(id);
-  const updatedProduct = ProductSchema.parse({ id: docRef.id, ...data });
-  await docRef.set(updatedProduct);
-  const updatedProductSummary = ProductSummarySchema.parse(updatedProduct);
-  const productsSummaryRef = db.collection("products").doc("summary");
-  await productsSummaryRef.update({
-    [updatedProductSummary.id]: updatedProductSummary,
+  const prisma = new PrismaClient();
+  await prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      ...ProductSchema.omit({ id: true }).parse(data),
+    },
   });
 }

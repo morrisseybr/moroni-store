@@ -1,0 +1,22 @@
+datasource db {
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  type        String
+  gender      String
+  size        String
+  number      Int?
+  price       Int
+  stock       Int
+}

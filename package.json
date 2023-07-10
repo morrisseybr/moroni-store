@@ -6,9 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prisma:pull": "dotenv -e .env.development -- prisma db pull",
+    "prisma:migrate": "dotenv -e .env.development -- prisma migrate dev",
+    "prisma:studio": "dotenv -e .env.development -- prisma studio",
+    "prisma:generate": "dotenv -e .env.development -- prisma generate",
+    "prisma:reset": "dotenv -e .env.development -- prisma migrate reset"
   },
   "dependencies": {
+    "@prisma/client": "4.16.2",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-slot": "^1.0.2",
@@ -23,10 +29,10 @@
     "clsx": "^1.2.1",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
-    "firebase-admin": "^11.9.0",
     "lucide-react": "^0.241.0",
     "moment": "^2.29.4",
     "next": "13.4.4",
+    "next-auth": "^4.22.1",
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-currency-input-field": "^3.6.10",
@@ -36,5 +42,8 @@
     "tailwindcss-animate": "^1.0.5",
     "typescript": "5.1.3",
     "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "prisma": "^4.16.2"
   }
 }
