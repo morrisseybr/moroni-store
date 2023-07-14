@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Inter } from "next/font/google";
-import "@/config/firebase";
+import "@/config/firebase-admin";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -12,8 +12,7 @@ export const metadata = {
   title: "Moroni Store",
   description: "",
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
