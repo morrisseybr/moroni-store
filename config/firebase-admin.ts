@@ -19,7 +19,7 @@ const FIREBASE_SERVICE_ACCOUNT = {
   client_x509_cert_url:
     process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL,
   universe_domain: process.env.FIREBASE_SERVICE_ACCOUNT_UNIVERSE_DOMAIN,
-};
+} as const;
 
 if (getApps().length === 0) {
   initializeApp({

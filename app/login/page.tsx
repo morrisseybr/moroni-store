@@ -1,13 +1,12 @@
 "use client";
 
-import { initializeApp } from "firebase/app";
 import {
   getAuth,
   setPersistence,
   signInWithEmailAndPassword,
   inMemoryPersistence,
 } from "firebase/auth";
-import { firebaseConfig } from "@/config/firebase";
+import { app } from "@/config/firebase";
 import { FormEvent, useState } from "react";
 import createSessionCookie from "@/actions/create-session-cookie";
 
@@ -18,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   setPersistence(auth, inMemoryPersistence);
 
