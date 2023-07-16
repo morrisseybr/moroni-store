@@ -1,5 +1,3 @@
-import verifySessionCookie from "@/actions/verify-session-cookie";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export default async function DashboardLayout({
@@ -7,10 +5,6 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isLogged = await verifySessionCookie();
-  if (!isLogged) {
-    redirect("/login");
-  }
   return (
     <>
       <header className="py-2 mb-2 border-b flex justify-between items-center">
