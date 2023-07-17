@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   getAuth,
   setPersistence,
@@ -7,7 +8,7 @@ import {
   inMemoryPersistence,
 } from "firebase/auth";
 import { app } from "@/config/firebase";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import createSessionCookie from "@/actions/create-session-cookie";
 
 import { Button } from "@/components/ui/button";
@@ -17,37 +18,42 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const router = useRouter();
   const auth = getAuth(app);
   setPersistence(auth, inMemoryPersistence);
 
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    setLoading(true);
-    event.preventDefault();
-    const email = event.currentTarget.email.value;
-    const password = event.currentTarget.password.value;
-    if (
-      !email ||
-      typeof email !== "string" ||
-      !password ||
-      typeof password !== "string"
-    )
-      return;
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const idToken = await userCredential.user.getIdToken();
-      await createSessionCookie({ idToken });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleLogin = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      setLoading(true);
+      event.preventDefault();
+      const email = event.currentTarget.email.value;
+      const password = event.currentTarget.password.value;
+      if (
+        !email ||
+        typeof email !== "string" ||
+        !password ||
+        typeof password !== "string"
+      )
+        return;
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const idToken = await userCredential.user.getIdToken();
+        await createSessionCookie({ idToken });
+        router.push("/products");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [auth, router]
+  );
   return (
     <main>
       <h1 className="">Moroni Store</h1>
