@@ -19,13 +19,13 @@ import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const auth = getAuth(app);
-  setPersistence(auth, inMemoryPersistence);
 
   const [loading, setLoading] = useState(false);
 
   const handleLogin = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
+      const auth = getAuth(app);
+      setPersistence(auth, inMemoryPersistence);
       setLoading(true);
       event.preventDefault();
       const email = event.currentTarget.email.value;
@@ -52,7 +52,7 @@ export default function LoginPage() {
         setLoading(false);
       }
     },
-    [auth, router]
+    [router]
   );
   return (
     <main>

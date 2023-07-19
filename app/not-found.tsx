@@ -15,4 +15,5 @@ export default function GlobalNotFound() {
     });
     router.push("/");
   }, [router, toast]);
+  return null;
 }

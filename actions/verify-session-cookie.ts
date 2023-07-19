@@ -2,6 +2,7 @@
 
 import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/dist/client/components/headers";
+import deleteSessionCookie from "./delete-session-cookie";
 
 export default async function verifySessionCookie() {
   const sessionCookie = cookies().get("session")?.value;
@@ -11,6 +12,7 @@ export default async function verifySessionCookie() {
     return true;
   } catch (error) {
     console.log(error);
+    await deleteSessionCookie();
     return false;
   }
 }
