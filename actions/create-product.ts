@@ -1,4 +1,3 @@
-"use server";
 import { ProductSchema, ProductSummarySchema } from "@/model/Product";
 import * as z from "zod";
 import { getFirestore } from "firebase-admin/firestore";

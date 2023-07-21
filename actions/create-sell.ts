@@ -1,5 +1,3 @@
-"use server";
-
 import { SellSchema } from "@/model/Sell";
 import { getFirestore } from "firebase-admin/firestore";
 

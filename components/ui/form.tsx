@@ -1,11 +1,11 @@
 "use client";
-import { FormHTMLAttributes, forwardRef } from "react";
+import { FormEvent, FormHTMLAttributes, forwardRef, useCallback } from "react";
 import { useToast } from "./use-toast";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ToastAction } from "./toast";
 
 type FormPros = FormHTMLAttributes<HTMLFormElement> & {
-  action: (data: FormData) => Promise<void>;
+  action: string;
   successTitle?: string;
   successMessage?: string;
   successRedirect?: string;
@@ -15,23 +15,37 @@ const Form = forwardRef<HTMLFormElement, FormPros>(
   ({ action, successTitle, successMessage, successRedirect, ...rest }, ref) => {
     const { toast } = useToast();
     const router = useRouter();
-    const handleAction = async (data: FormData) => {
-      await action(data);
-      successTitle &&
-        toast({
-          title: successTitle,
-          description: successMessage,
-          action: successRedirect ? (
-            <ToastAction
-              altText="Voltar"
-              onClick={() => router.push(successRedirect)}
-            >
-              Voltar
-            </ToastAction>
-          ) : undefined,
-        });
-    };
-    return <form ref={ref} action={handleAction} {...rest} />;
+    const handleSubmit = useCallback(
+      async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        try {
+          await fetch(action, {
+            method: form.method,
+            body: formData,
+          });
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+        successTitle &&
+          toast({
+            title: successTitle,
+            description: successMessage,
+            action: successRedirect ? (
+              <ToastAction
+                altText="Voltar"
+                onClick={() => router.push(successRedirect)}
+              >
+                Voltar
+              </ToastAction>
+            ) : undefined,
+          });
+      },
+      [action, router, successMessage, successRedirect, successTitle, toast]
+    );
+    return <form method="POST" ref={ref} onSubmit={handleSubmit} {...rest} />;
   }
 );
 

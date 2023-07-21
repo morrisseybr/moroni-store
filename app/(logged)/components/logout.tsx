@@ -1,6 +1,5 @@
 "use client";
 
-import deleteSessionCookie from "@/actions/delete-session-cookie";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -11,13 +10,15 @@ export default function Logout() {
   const [loading, setLoading] = useState(false);
   const handleLogout = useCallback(async () => {
     setLoading(true);
-    await deleteSessionCookie();
-    setLoading(false);
+    await fetch("/api/session", {
+      method: "DELETE",
+    });
     router.push("/login");
+    setLoading(false);
   }, [router]);
 
   return (
-    <Button onClick={handleLogout} variant="outline">
+    <Button onClick={handleLogout} variant="outline" disabled={loading}>
       {loading ? <Loader2 className="animate-spin" /> : "Sair"}
     </Button>
   );

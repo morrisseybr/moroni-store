@@ -9,16 +9,18 @@ import {
 } from "firebase/auth";
 import { app } from "@/config/firebase";
 import { FormEvent, useCallback, useState } from "react";
-import createSessionCookie from "@/actions/create-session-cookie";
 
 import { Button } from "@/components/ui/button";
 import { Fieldset } from "@/components/ui/fieldset";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { FirebaseError } from "firebase/app";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
 
@@ -44,15 +46,38 @@ export default function LoginPage() {
           password
         );
         const idToken = await userCredential.user.getIdToken();
-        await createSessionCookie({ idToken });
+        await fetch("/api/session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idToken }),
+        });
         router.push("/products");
       } catch (error) {
-        console.log(error);
+        if (error instanceof FirebaseError) {
+          switch (error.code) {
+            case "auth/user-not-found":
+            case "auth/wrong-password":
+              toast({
+                title: "Erro",
+                description: "E-mail ou senha incorretos.",
+                variant: "destructive",
+              });
+              break;
+            default:
+              toast({
+                title: "Erro",
+                description: "Erro desconhecido, tente novamente.",
+                variant: "destructive",
+              });
+          }
+        }
       } finally {
         setLoading(false);
       }
     },
-    [router]
+    [router, toast]
   );
   return (
     <main>
@@ -67,7 +92,11 @@ export default function LoginPage() {
         </Fieldset>
         <Fieldset>
           <Label htmlFor="password">Senha</Label>
-          <Input type="password" name="password" />
+          <Input
+            type="password"
+            name="password"
+            autoComplete="current-password"
+          />
         </Fieldset>
         <Button type="submit" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" /> : "Entrar"}

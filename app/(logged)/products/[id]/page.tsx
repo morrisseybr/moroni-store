@@ -9,15 +9,11 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
-import createProduct from "@/actions/create-product";
 import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
 import getProduct from "@/actions/get-product";
-import updateProduct from "@/actions/update-product";
-import { redirect } from "next/navigation";
-// import getTranslation from "@/components/i18n";
 
 type ProductDetailsProps = {
   params: {
@@ -27,11 +23,6 @@ type ProductDetailsProps = {
 
 export default async function ProductDetails({ params }: ProductDetailsProps) {
   const product = await getProduct(params.id);
-
-  const handleFormAction = async (data: FormData) => {
-    "use server";
-    await updateProduct(product.id, data);
-  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,7 +34,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
       </header>
       <Form
         className="flex flex-col gap-4"
-        action={handleFormAction}
+        action="/api/products/[id]"
         successTitle="Sucesso!"
         successMessage="Produto atualizado com sucesso."
         successRedirect="/products"

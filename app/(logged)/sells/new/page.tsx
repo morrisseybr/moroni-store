@@ -13,7 +13,6 @@ import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
-import createSell from "@/actions/create-sell";
 
 export default async function Sell() {
   return (
@@ -26,7 +25,7 @@ export default async function Sell() {
       </header>
       <Form
         className="flex flex-col gap-4"
-        action={createSell}
+        action="/api/sells"
         successTitle="Sucesso!"
         successMessage="Venda criada com sucesso."
         successRedirect="/sells"

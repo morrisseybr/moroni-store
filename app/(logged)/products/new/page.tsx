@@ -9,19 +9,12 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
-import createProduct from "@/actions/create-product";
 import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
-// import getTranslation from "@/components/i18n";
 
 export default async function Product() {
-  const handleFormAction = async (data: FormData) => {
-    "use server";
-    await createProduct(data);
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -31,8 +24,8 @@ export default async function Product() {
         </div>
       </header>
       <Form
+        action="/api/products"
         className="flex flex-col gap-4"
-        action={handleFormAction}
         successTitle="Sucesso!"
         successMessage="Produto criado com sucesso."
         successRedirect="/products"

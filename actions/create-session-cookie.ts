@@ -1,4 +1,3 @@
-"use server";
 import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/dist/client/components/headers";
 
