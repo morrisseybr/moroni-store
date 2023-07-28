@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +13,36 @@ import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
 import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
-import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { FormEvent } from "react";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
-export default async function Product() {
+export default function Product() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (data: FormData) => {
+      return axios.post("/api/products", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Produto cadastrado",
+        description: "O produto foi cadastrado com sucesso.",
+      });
+      router.push("/products");
+    },
+  });
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    mutate(formData);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -23,13 +51,7 @@ export default async function Product() {
           <h3>Novo produto</h3>
         </div>
       </header>
-      <Form
-        action="/api/products"
-        className="flex flex-col gap-4"
-        successTitle="Sucesso!"
-        successMessage="Produto criado com sucesso."
-        successRedirect="/products"
-      >
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <Fieldset>
           <Label htmlFor="name">Nome</Label>
           <Input type="text" name="name" required />
@@ -96,8 +118,10 @@ export default async function Product() {
           <Label htmlFor="price">Preço</Label>
           <InputCurrency name="price" required />
         </Fieldset>
-        <Button type="submit">Salvar</Button>
-      </Form>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? <Loader2 className="animate-spin" /> : "Salvar"}
+        </Button>
+      </form>
     </div>
   );
 }

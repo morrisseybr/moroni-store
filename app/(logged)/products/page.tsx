@@ -5,6 +5,7 @@ import getProductsSummary from "@/actions/get-products-summary";
 
 export default async function ProductsPage() {
   const productsSummary = await getProductsSummary();
+
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="flex justify-between items-center">

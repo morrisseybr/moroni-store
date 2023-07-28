@@ -10,10 +10,12 @@ function isFirebaseAuthError(error: unknown): error is FirebaseError {
 
 export default function handleApiError(error: unknown) {
   if (error instanceof z.ZodError) {
-    return new Response(JSON.stringify(error.errors), { status: 400 });
+    return new Response(JSON.stringify(error), {
+      status: 400,
+    });
   }
   if (isFirebaseAuthError(error)) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(error), { status: 401 });
   }
-  return new Response(null, { status: 500 });
+  return new Response(JSON.stringify(error), { status: 500 });
 }
