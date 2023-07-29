@@ -118,8 +118,8 @@ export default function Product() {
           <Label htmlFor="price">Preço</Label>
           <InputCurrency name="price" required />
         </Fieldset>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? <Loader2 className="animate-spin" /> : "Salvar"}
+        <Button type="submit" disabled={isLoading} loading={isLoading}>
+          Salvar
         </Button>
       </form>
     </div>

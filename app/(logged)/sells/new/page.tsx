@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +13,22 @@ import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
 import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
-import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
+import Form from "@/components/ui/form";
+import { FormEvent } from "react";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 
-export default async function Sell() {
+export default function Sell() {
+  const { mutate, isLoading } = useMutation(async (data: FormData) => {
+    await axios.post("/api/sells", data);
+  });
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    mutate(formData);
+  };
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -23,13 +37,7 @@ export default async function Sell() {
           <h3>Nova venda</h3>
         </div>
       </header>
-      <Form
-        className="flex flex-col gap-4"
-        action="/api/sells"
-        successTitle="Sucesso!"
-        successMessage="Venda criada com sucesso."
-        successRedirect="/sells"
-      >
+      <Form onSubmit={handleSubmit}>
         <Fieldset>
           <Label htmlFor="name">Nome</Label>
           <Input type="text" name="name" required />
@@ -96,7 +104,9 @@ export default async function Sell() {
           <Label htmlFor="price">Preço</Label>
           <InputCurrency name="price" required />
         </Fieldset>
-        <Button type="submit">Salvar</Button>
+        <Button type="submit" disabled={isLoading} loading={isLoading}>
+          Salvar
+        </Button>
       </Form>
     </div>
   );

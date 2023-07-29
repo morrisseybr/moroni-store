@@ -9,7 +9,7 @@ export default async function SellsPage() {
     <div className="flex flex-col gap-4 py-4">
       <div className="flex justify-between items-center">
         <h1>Vendas</h1>
-        <Link href="/products/new">
+        <Link href="/sells/new">
           <Plus />
           Nova venda
         </Link>
