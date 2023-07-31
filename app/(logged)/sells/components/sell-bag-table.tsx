@@ -9,9 +9,13 @@ import { useMemo, useRef } from "react";
 
 type SellBagTableProps = {
   bagItems: Sell["bag"];
+  onRemoveItem: (itemId: string) => void;
 };
 
-export default function SellBagTable({ bagItems }: SellBagTableProps) {
+export default function SellBagTable({
+  bagItems,
+  onRemoveItem,
+}: SellBagTableProps) {
   const bagItemsWithId = useMemo(
     () =>
       bagItems.map((bagItem) => ({
@@ -20,10 +24,6 @@ export default function SellBagTable({ bagItems }: SellBagTableProps) {
       })),
     [bagItems]
   );
-
-  const handleActionClick = (itemId: string) => {
-    console.log("action clicked", itemId);
-  };
 
   const columns = useRef<ColumnDef<(typeof bagItemsWithId)[number]>[]>([
     {
@@ -44,9 +44,7 @@ export default function SellBagTable({ bagItems }: SellBagTableProps) {
       cell: ({ row }) => {
         return (
           <TableActions>
-            <TableActionButton
-              onClick={() => handleActionClick(row.original.id)}
-            >
+            <TableActionButton onClick={() => onRemoveItem(row.original.id)}>
               <Trash />
             </TableActionButton>
           </TableActions>
