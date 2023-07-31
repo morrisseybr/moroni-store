@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { ProductSummary } from "@/model/Product";
 import { SellSummary } from "@/model/Sell";
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil } from "lucide-react";

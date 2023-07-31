@@ -17,7 +17,6 @@ import { BackButton } from "@/components/ui/back-button";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { FormEvent } from "react";
-import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 

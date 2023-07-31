@@ -15,10 +15,12 @@ import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
 import Form from "@/components/ui/form";
-import { FormEvent } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useMutation } from "react-query";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Combobox } from "@/components/ui/combobox";
+import SellBagTable from "../components/sell-bag-table";
+import { Sell } from "@/model/Sell";
 
 export default function Sell() {
   const { mutate, isLoading } = useMutation(async (data: FormData) => {
@@ -29,6 +31,24 @@ export default function Sell() {
     const formData = new FormData(event.currentTarget);
     mutate(formData);
   };
+  const items = useRef([
+    { label: "Camisa 1", value: "1" },
+    { label: "Camisa 2", value: "2" },
+  ]);
+  const [bagItems, setBagItems] = useState<Sell["bag"]>([]);
+  const handleComboSelect = (value: string) => {
+    setBagItems((prev) => [
+      ...prev,
+      {
+        productId: value,
+        productName:
+          items.current.find((item) => item.value === value)?.label || "",
+        quantity: 1,
+        price: 0,
+      },
+    ]);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -39,12 +59,14 @@ export default function Sell() {
       </header>
       <Form onSubmit={handleSubmit}>
         <Fieldset>
-          <Label htmlFor="name">Nome</Label>
-          <Input type="text" name="name" required />
-        </Fieldset>
-        <Fieldset>
-          <Label htmlFor="description">Descrição</Label>
-          <Input type="text" name="description" />
+          <Label htmlFor="bag">Sacola</Label>
+          <Combobox
+            items={items.current}
+            onSelect={handleComboSelect}
+            placeholder="Selecione um produto"
+            searchPlaceholder="Pesquisar produto"
+          />
+          <SellBagTable bagItems={bagItems} />
         </Fieldset>
         <Fieldset>
           <Label htmlFor="type">Tipo</Label>
