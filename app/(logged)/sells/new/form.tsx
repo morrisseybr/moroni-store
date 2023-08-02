@@ -74,6 +74,56 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
     },
     [setBagItems]
   );
+
+  const handleAddQuantity = useCallback(
+    (itemId: string) => {
+      console.log(itemId);
+      setBagItems((prev) =>
+        prev.map((item) =>
+          item.productId === itemId
+            ? {
+                ...item,
+                quantity: item.quantity + 1,
+              }
+            : item
+        )
+      );
+    },
+    [setBagItems]
+  );
+
+  const handleSubtractQuantity = useCallback(
+    (itemId: string) => {
+      setBagItems((prev) =>
+        prev.map((item) =>
+          item.productId === itemId
+            ? {
+                ...item,
+                quantity: item.quantity - 1,
+              }
+            : item
+        )
+      );
+    },
+    [setBagItems]
+  );
+
+  const handlePriceChange = useCallback(
+    (itemId: string, price: number) => {
+      setBagItems((prev) =>
+        prev.map((item) =>
+          item.productId === itemId
+            ? {
+                ...item,
+                price,
+              }
+            : item
+        )
+      );
+    },
+    [setBagItems]
+  );
+
   return (
     <Form onSubmit={handleSubmit}>
       <Fieldset>
@@ -84,7 +134,14 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
           placeholder="Selecione um produto"
           searchPlaceholder="Pesquisar produto"
         />
-        <SellBagTable bagItems={bagItems} onRemoveItem={handleRemoveItem} />
+        <SellBagTable
+          productsSummary={productsSummary}
+          bagItems={bagItems}
+          onRemoveItem={handleRemoveItem}
+          onAddQuantity={handleAddQuantity}
+          onSubtractQuantity={handleSubtractQuantity}
+          onPriceChange={handlePriceChange}
+        />
       </Fieldset>
       <Fieldset>
         <Label htmlFor="type">Tipo</Label>

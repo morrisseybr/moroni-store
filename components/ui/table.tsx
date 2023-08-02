@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { Button, ButtonProps } from "./button";
+import { cva, VariantProps } from "class-variance-authority";
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -110,11 +111,27 @@ const TableActionButton = React.forwardRef<
 
 TableActionButton.displayName = "TableActionButton";
 
+const tableActionsVariant = cva("flex items-center justify-end gap-2", {
+  variants: {
+    justify: {
+      start: "justify-start",
+      end: "justify-end",
+    },
+  },
+});
+
 const TableActions = React.forwardRef<
   HTMLDivElement,
-  Omit<React.HTMLAttributes<HTMLDivElement>, "className">
->((props, ref) => {
-  return <div ref={ref} className="flex items-center justify-end" {...props} />;
+  Omit<React.HTMLAttributes<HTMLDivElement>, "className"> &
+    VariantProps<typeof tableActionsVariant>
+>(({ justify, ...props }, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(tableActionsVariant({ justify }))}
+      {...props}
+    />
+  );
 });
 
 TableActions.displayName = "TableActions";

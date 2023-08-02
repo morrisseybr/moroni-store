@@ -6,6 +6,7 @@ import CurrencyInput from "react-currency-input-field";
 
 export interface InputCurrencyProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  onValueChange?: (value: string | undefined) => void;
   type?: never;
   defaultValue?: string | number;
   step?: number;
@@ -27,6 +28,7 @@ const InputCurrency = React.forwardRef<HTMLInputElement, InputCurrencyProps>(
     );
   }
 );
+
 InputCurrency.displayName = "InputCurrency";
 
 export { InputCurrency };
