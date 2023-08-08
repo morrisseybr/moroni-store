@@ -17,14 +17,20 @@ import {
   ProductSize,
   ProductSummary,
 } from "@/model/Product";
-import { InputCurrency } from "@/components/ui/input-currency";
+import {
+  InputCurrency,
+  currencyToNumber,
+  numberToCurrency,
+} from "@/components/ui/input-currency";
 import { FormEvent, useCallback, useMemo, useRef, useState } from "react";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { Combobox } from "@/components/ui/combobox";
 import SellBagTable from "../components/sell-bag-table";
-import { Sell } from "@/model/Sell";
+import { Sell, SellBag } from "@/model/Sell";
 import Form from "@/components/ui/form";
+import { CreateSellFormData } from "@/actions/create-sell";
+import { formatValue } from "react-currency-input-field";
 
 type NewSellFormProps = {
   productsSummary: ProductSummary[];
@@ -47,82 +53,84 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
     const formData = new FormData(event.currentTarget);
     mutate(formData);
   };
-  const [bagItems, setBagItems] = useState<Sell["bag"]>([]);
+  const [sellBag, setSellBag] = useState<CreateSellFormData["bag"]>([]);
   const handleComboSelect = useCallback(
     (value: string) => {
-      console.log(
-        value,
-        items.find((item) => item.value === "BgtRAxq5mTYrN0cse3oJ")
-      );
-      setBagItems((prev) => [
-        ...prev,
-        {
-          productId: value,
-          productName:
-            items.find((item) => item.value === value)?.label || "aaa",
-          quantity: 1,
-          price: 0,
-        },
-      ]);
+      setSellBag((prev) => {
+        const selectedProduct = productsSummary.find(
+          (product) => product.id === value
+        );
+        if (!selectedProduct) return prev;
+        return [
+          ...prev,
+          {
+            productId: selectedProduct.id,
+            productName: selectedProduct.name,
+            quantity: 1,
+            price: selectedProduct.price.toString(),
+          },
+        ];
+      });
     },
-    [items]
+    [productsSummary]
   );
 
-  const handleRemoveItem = useCallback(
-    (itemId: string) => {
-      setBagItems((prev) => prev.filter((item) => item.productId !== itemId));
-    },
-    [setBagItems]
-  );
+  const handleRemoveItem = useCallback((itemId: string) => {
+    setSellBag((prev) => prev.filter((item) => item.productId !== itemId));
+  }, []);
 
-  const handleAddQuantity = useCallback(
-    (itemId: string) => {
-      console.log(itemId);
-      setBagItems((prev) =>
-        prev.map((item) =>
-          item.productId === itemId
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-              }
-            : item
-        )
-      );
-    },
-    [setBagItems]
-  );
+  const handleAddQuantity = useCallback((itemId: string) => {
+    setSellBag((prev) =>
+      prev.map((item) => {
+        if (item.productId === itemId) {
+          const newQuantity = item.quantity + 1;
+          const newPrice = numberToCurrency(
+            (currencyToNumber(item.price) / item.quantity) * newQuantity
+          );
+          console.log(item.price, newPrice);
+          return {
+            ...item,
+            quantity: newQuantity,
+            price: newPrice,
+          };
+        }
+        return item;
+      })
+    );
+  }, []);
 
-  const handleSubtractQuantity = useCallback(
-    (itemId: string) => {
-      setBagItems((prev) =>
-        prev.map((item) =>
-          item.productId === itemId
-            ? {
-                ...item,
-                quantity: item.quantity - 1,
-              }
-            : item
-        )
-      );
-    },
-    [setBagItems]
-  );
+  const handleSubtractQuantity = useCallback((itemId: string) => {
+    setSellBag((prev) =>
+      prev.map((item) => {
+        if (item.productId === itemId) {
+          const newQuantity = item.quantity - 1;
+          const newPrice = numberToCurrency(
+            (currencyToNumber(item.price) / item.quantity) * newQuantity
+          );
+          return {
+            ...item,
+            quantity: newQuantity,
+            price: newPrice,
+          };
+        }
+        return item;
+      })
+    );
+  }, []);
 
-  const handlePriceChange = useCallback(
-    (itemId: string, price: number) => {
-      setBagItems((prev) =>
-        prev.map((item) =>
-          item.productId === itemId
-            ? {
-                ...item,
-                price,
-              }
-            : item
-        )
-      );
-    },
-    [setBagItems]
-  );
+  const handlePriceChange = useCallback((itemId: string, value?: string) => {
+    setSellBag((prev) =>
+      prev.map((item) => {
+        if (item.productId === itemId) {
+          return {
+            ...item,
+            price: value,
+          };
+        }
+        return item;
+      })
+    );
+  }, []);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -136,11 +144,11 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
         />
         <SellBagTable
           productsSummary={productsSummary}
-          bagItems={bagItems}
-          onRemoveItem={handleRemoveItem}
+          sellBag={sellBag}
           onAddQuantity={handleAddQuantity}
           onSubtractQuantity={handleSubtractQuantity}
           onPriceChange={handlePriceChange}
+          onRemoveItem={handleRemoveItem}
         />
       </Fieldset>
       <Fieldset>

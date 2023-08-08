@@ -7,16 +7,46 @@ import CurrencyInput from "react-currency-input-field";
 export interface InputCurrencyProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   onValueChange?: (value: string | undefined) => void;
+  onValueBlur?: (value: string | undefined) => void;
   type?: never;
   defaultValue?: string | number;
   step?: number;
 }
 
+export function currencyToNumber(value?: string): number {
+  if (!value) return 0;
+  return parseFloat(value.replace(".", "").replace(",", "."));
+}
+
+export function numberToCurrency(value: number): string {
+  return value.toFixed(2).replace(",", "").replace(".", ",");
+}
+
 const InputCurrency = React.forwardRef<HTMLInputElement, InputCurrencyProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, onValueChange, onValueBlur, onBlur, ...props }, ref) => {
+    const [value, setValue] = React.useState<string | undefined>(
+      props.defaultValue?.toString()
+    );
+    const handleValueChange = React.useCallback(
+      (value: string | undefined) => {
+        setValue(value);
+        onValueChange?.(value);
+      },
+      [onValueChange]
+    );
+    const handleBlur = React.useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        onValueBlur?.(value);
+        onBlur?.(e);
+      },
+      [onBlur, onValueBlur, value]
+    );
     return (
       <CurrencyInput
         ref={ref}
+        value={value}
+        onValueChange={handleValueChange}
+        onBlur={handleBlur}
         decimalScale={2}
         intlConfig={{ locale: "pt-BR", currency: "BRL" }}
         className={cn(

@@ -21,3 +21,7 @@ export const SellSummarySchema = SellSchema.pick({
 });
 
 export type SellSummary = z.infer<typeof SellSummarySchema>;
+
+export type SellBag = Sell["bag"];
+
+export type SellBagItem = SellBag[number];
