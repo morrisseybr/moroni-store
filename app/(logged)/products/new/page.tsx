@@ -14,11 +14,11 @@ import { Fieldset } from "@/components/ui/fieldset";
 import { ProductType, ProductGender, ProductSize } from "@/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
-import { useMutation } from "react-query";
 import axios from "axios";
 import { FormEvent } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Product() {
   const router = useRouter();

@@ -3,9 +3,8 @@
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { useToast } from "./ui/use-toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function QueryProvider({
   children,
@@ -54,7 +53,7 @@ export default function QueryProvider({
   return (
     <QueryClientProvider client={queryClient.current}>
       {children}
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   );
 }

@@ -1,6 +1,16 @@
 import createSessionCookie from "@/actions/create-session-cookie";
 import deleteSessionCookie from "@/actions/delete-session-cookie";
 import handleApiError from "@/actions/handle-api-error";
+import verifySessionCookie from "@/actions/verify-session-cookie";
+
+export async function GET(request: Request) {
+  try {
+    await verifySessionCookie();
+  } catch (error) {
+    return handleApiError(error);
+  }
+  return new Response(null, { status: 200 });
+}
 
 export async function POST(request: Request) {
   try {
