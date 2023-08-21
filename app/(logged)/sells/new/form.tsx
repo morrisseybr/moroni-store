@@ -18,7 +18,6 @@ import {
   ProductSummary,
 } from "@/model/Product";
 import {
-  InputCurrency,
   currencyToNumber,
   numberToCurrency,
 } from "@/components/ui/input-currency";
@@ -26,11 +25,10 @@ import { FormEvent, useCallback, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { Combobox } from "@/components/ui/combobox";
 import SellBagTable from "../components/sell-bag-table";
-import { Sell, SellBag } from "@/model/Sell";
 import Form from "@/components/ui/form";
 import { CreateSellFormData } from "@/actions/create-sell";
-import { formatValue } from "react-currency-input-field";
 import { useMutation } from "@tanstack/react-query";
+import { InputPhone } from "@/components/ui/input-phone";
 
 type NewSellFormProps = {
   productsSummary: ProductSummary[];
@@ -135,6 +133,18 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
   return (
     <Form onSubmit={handleSubmit}>
       <Fieldset>
+        <Label htmlFor="custumerName">Nome do cliente</Label>
+        <Input type="text" name="custumerName" />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="custumerEmail">Email do cliente</Label>
+        <Input type="email" name="custumerEmail" />
+      </Fieldset>
+      <Fieldset>
+        <Label htmlFor="custumerPhone">Telefone do cliente</Label>
+        <InputPhone name="custumerPhone" />
+      </Fieldset>
+      <Fieldset>
         <Label htmlFor="bag">Sacola</Label>
         <Combobox
           items={items}
@@ -195,19 +205,6 @@ export default function NewSellForm({ productsSummary }: NewSellFormProps) {
             ))}
           </SelectContent>
         </Select>
-      </Fieldset>
-      <Fieldset>
-        <Label htmlFor="number">Número</Label>
-        <Input type="number" step={1} min={0} name="number" />
-      </Fieldset>
-
-      <Fieldset>
-        <Label htmlFor="stock">Estoque</Label>
-        <Input type="number" step={1} name="stock" required />
-      </Fieldset>
-      <Fieldset>
-        <Label htmlFor="price">Preço</Label>
-        <InputCurrency name="price" required />
       </Fieldset>
       <Button type="submit" disabled={isLoading} loading={isLoading}>
         Salvar

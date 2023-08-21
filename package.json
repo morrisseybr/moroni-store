@@ -36,6 +36,7 @@
     "react": "18.2.0",
     "react-currency-input-field": "^3.6.11",
     "react-dom": "18.2.0",
+    "react-phone-number-input": "^3.3.2",
     "tailwind-merge": "^1.13.1",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.6",
