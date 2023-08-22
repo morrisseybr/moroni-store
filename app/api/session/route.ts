@@ -3,7 +3,7 @@ import deleteSessionCookie from "@/actions/delete-session-cookie";
 import handleApiError from "@/actions/handle-api-error";
 import verifySessionCookie from "@/actions/verify-session-cookie";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await verifySessionCookie();
   } catch (error) {
