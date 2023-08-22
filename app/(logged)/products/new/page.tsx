@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
-import { ProductType, ProductGender, ProductSize } from "@/model/Product";
+import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
 import axios from "axios";
@@ -24,7 +24,7 @@ export default function Product() {
   const router = useRouter();
   const { toast } = useToast();
   const { mutate, isLoading } = useMutation({
-    mutationFn: (data: FormData) => {
+    mutationFn: (data: any) => {
       return axios.post("/api/products", data);
     },
     onSuccess: () => {
@@ -39,7 +39,8 @@ export default function Product() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    mutate(formData);
+    const data = Object.fromEntries(formData.entries());
+    mutate(data);
   };
 
   return (

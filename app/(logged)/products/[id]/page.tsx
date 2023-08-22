@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,20 +11,41 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
-import { ProductType, ProductGender, ProductSize } from "@/model/Product";
+import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
-import { Form } from "@/components/ui/form";
 import { BackButton } from "@/components/ui/back-button";
-import getProduct from "@/actions/get-product";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { FormEvent } from "react";
 
-type ProductDetailsProps = {
-  params: {
-    id: string;
+export default function ProductDetails({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const { data: product } = useQuery(["product", params.id], async () => {
+    const response = await axios.get(`/api/products/${params.id}`);
+    return response.data;
+  });
+  const { mutate } = useMutation({
+    mutationFn: (data: any) => {
+      return axios.put("/api/products", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Produto atualizado",
+        description: "O produto foi atualizado com sucesso.",
+      });
+      router.push("/products");
+    },
+  });
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    mutate(data);
   };
-};
-
-export default async function ProductDetails({ params }: ProductDetailsProps) {
-  const product = await getProduct(params.id);
 
   return (
     <div className="flex flex-col gap-4">
@@ -32,13 +55,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
           <h3>Editar produto</h3>
         </div>
       </header>
-      <Form
-        className="flex flex-col gap-4"
-        action="/api/products/[id]"
-        successTitle="Sucesso!"
-        successMessage="Produto atualizado com sucesso."
-        successRedirect="/products"
-      >
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <Fieldset>
           <Label htmlFor="name">Nome</Label>
           <Input type="text" name="name" required defaultValue={product.name} />
@@ -119,7 +136,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
           <InputCurrency name="price" required defaultValue={product.price} />
         </Fieldset>
         <Button type="submit">Salvar</Button>
-      </Form>
+      </form>
     </div>
   );
 }

@@ -1,9 +1,7 @@
-import { Product, ProductSchema } from "@/model/Product";
-import { getFirestore } from "firebase-admin/firestore";
+import { Product, ProductId } from "@/core/model/Product";
+import { FirestoreProductRepository } from "@/db/firebase/FirestoreProductRepository";
 
 export default async function getProduct(id: string): Promise<Product> {
-  const db = getFirestore();
-  const productRef = db.collection("products").doc(id);
-  const productSnapshot = await productRef.get();
-  return ProductSchema.parse(productSnapshot.data());
+  const repo = new FirestoreProductRepository();
+  return await repo.read(new ProductId(id));
 }

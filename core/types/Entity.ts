@@ -11,11 +11,3 @@ export abstract class Entity<T extends Id, U extends Model> {
   }
   abstract toModel(): U;
 }
-
-export interface EntityConstructor<
-  T extends Id,
-  U extends Model,
-  V extends Entity<T, U>
-> {
-  new (model: U): V;
-}
