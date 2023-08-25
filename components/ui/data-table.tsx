@@ -25,6 +25,7 @@ interface DataTableProps<TData extends { id: string }, TValue> {
   pages: TData[][];
   onFetchNextPage: () => Promise<void>;
   hasNextPageToFetch: boolean;
+  isFetchingNextPage?: boolean;
   pageSize?: number;
 }
 
@@ -33,6 +34,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   pages,
   onFetchNextPage,
   hasNextPageToFetch,
+  isFetchingNextPage,
   pageSize = 10,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -132,7 +134,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           variant="outline"
           size="sm"
           onClick={handleNextPage}
-          disabled={!hasNextPage}
+          disabled={!hasNextPage || isFetchingNextPage}
         >
           Próxima
         </Button>

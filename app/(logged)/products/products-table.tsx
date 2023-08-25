@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { ProductModel } from "@/core/model/Product";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import { Pencil } from "lucide-react";
@@ -25,22 +25,28 @@ const EditButton = ({ productId }: { productId: string }) => {
     </div>
   );
 };
-export default function ProductsTable() {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery(
-    ["products"],
-    async ({ pageParam }) => {
-      const response = await axios.get<ProductModel[]>("/api/products", {
-        params: {
-          cursor: pageParam,
-        },
-      });
-      return response.data;
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage[lastPage?.length - 1]?.id,
-      keepPreviousData: true,
-    }
-  );
+export default function ProductsTable({
+  firstPage,
+}: {
+  firstPage: ProductModel[];
+}) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery(
+      ["products"],
+      async ({ pageParam }) => {
+        const response = await axios.get<ProductModel[]>("/api/products", {
+          params: {
+            cursor: pageParam,
+          },
+        });
+        return response.data;
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage[lastPage?.length - 1]?.id,
+        keepPreviousData: true,
+        initialData: { pages: [firstPage], pageParams: [null] },
+      }
+    );
   const columns = useMemo<ColumnDef<ProductModel>[]>(
     () => [
       {
@@ -83,6 +89,7 @@ export default function ProductsTable() {
         onFetchNextPage={async () => {
           await fetchNextPage();
         }}
+        isFetchingNextPage={isFetchingNextPage}
       />
     </section>
   );
