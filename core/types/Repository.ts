@@ -11,4 +11,5 @@ export abstract class Repository<
   abstract read(id: I): Promise<E>;
   abstract update(entity: E): Promise<void>;
   abstract delete(id: I): Promise<void>;
+  abstract list(order: string, limit: number, cursorId: I | null): Promise<E[]>;
 }

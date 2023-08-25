@@ -21,8 +21,11 @@ const FIREBASE_SERVICE_ACCOUNT = {
   universe_domain: process.env.FIREBASE_SERVICE_ACCOUNT_UNIVERSE_DOMAIN,
 } as const;
 
-if (getApps().length === 0) {
-  initializeApp({
-    credential: cert(FIREBASE_SERVICE_ACCOUNT as ServiceAccount),
-  });
-}
+const app =
+  getApps().length === 0
+    ? initializeApp({
+        credential: cert(FIREBASE_SERVICE_ACCOUNT as ServiceAccount),
+      })
+    : getApps()[0];
+
+export { app };

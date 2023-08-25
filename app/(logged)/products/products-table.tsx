@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { ProductSummary } from "@/model/Product";
+import { ProductModel } from "@/core/model/Product";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
+import axios from "axios";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -23,12 +25,23 @@ const EditButton = ({ productId }: { productId: string }) => {
     </div>
   );
 };
-
-type ProductsTableProps = {
-  productsSummary: ProductSummary[];
-};
-export default function ProductsTable({ productsSummary }: ProductsTableProps) {
-  const columns = useMemo<ColumnDef<ProductSummary>[]>(
+export default function ProductsTable() {
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery(
+    ["products"],
+    async ({ pageParam }) => {
+      const response = await axios.get<ProductModel[]>("/api/products", {
+        params: {
+          cursor: pageParam,
+        },
+      });
+      return response.data;
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage[lastPage?.length - 1]?.id,
+      keepPreviousData: true,
+    }
+  );
+  const columns = useMemo<ColumnDef<ProductModel>[]>(
     () => [
       {
         header: "Nome",
@@ -63,7 +76,14 @@ export default function ProductsTable({ productsSummary }: ProductsTableProps) {
 
   return (
     <section>
-      <DataTable columns={columns} data={productsSummary} />
+      <DataTable
+        columns={columns}
+        pages={data?.pages || []}
+        hasNextPageToFetch={!!hasNextPage}
+        onFetchNextPage={async () => {
+          await fetchNextPage();
+        }}
+      />
     </section>
   );
 }

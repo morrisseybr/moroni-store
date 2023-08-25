@@ -1,11 +1,8 @@
-import ProductsTable from "./components/products-table";
+import ProductsTable from "./products-table";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import getProductsSummary from "@/actions/get-products-summary";
 
 export default async function ProductsPage() {
-  const productsSummary = await getProductsSummary();
-
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="flex justify-between items-center">
@@ -15,7 +12,7 @@ export default async function ProductsPage() {
           Novo produto
         </Link>
       </div>
-      <ProductsTable productsSummary={productsSummary} />
+      <ProductsTable />
     </div>
   );
 }

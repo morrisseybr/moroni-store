@@ -44,6 +44,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^4.33.0",
     "encoding": "^0.1.13"
   }
 }

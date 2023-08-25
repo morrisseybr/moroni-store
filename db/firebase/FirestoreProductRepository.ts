@@ -1,4 +1,4 @@
-import { app } from "@/config/firebase";
+import { app } from "@/config/firebase-admin";
 import {
   Product,
   ProductId,
@@ -19,7 +19,7 @@ export class FirestoreProductRepository extends ProductRepository {
       fromFirestore: (snapshot) => {
         const data = snapshot.data();
         const model = ProductModel.parse(data);
-        return new Product(new ProductId(snapshot.id), model);
+        return new Product(model);
       },
     });
 
@@ -33,7 +33,7 @@ export class FirestoreProductRepository extends ProductRepository {
       throw new Error("Document not found");
     }
     const model = ProductModel.parse(data);
-    return new Product(new ProductId(docSnapshot.id), model);
+    return new Product(model);
   }
   async update(product: Product): Promise<void> {
     const doc = this.#collection.doc(product.id.value);
@@ -41,5 +41,25 @@ export class FirestoreProductRepository extends ProductRepository {
   }
   async delete(id: ProductId): Promise<void> {
     await this.#collection.doc(id.value).delete({ exists: true });
+  }
+  async list(
+    order: string,
+    limit: number,
+    cursorId: ProductId | null
+  ): Promise<Product[]> {
+    if (!cursorId) {
+      const querySnapshot = await this.#collection
+        .orderBy(order)
+        .limit(limit)
+        .get();
+      return querySnapshot.docs.map((doc) => doc.data());
+    }
+    const cursorSnapshot = await this.#collection.doc(cursorId.value).get();
+    const querySnapshot = await this.#collection
+      .orderBy(order)
+      .limit(limit)
+      .startAfter(cursorSnapshot)
+      .get();
+    return querySnapshot.docs.map((doc) => doc.data());
   }
 }

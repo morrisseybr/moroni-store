@@ -34,6 +34,7 @@ export const ProductSize = z.enum([
 export type ProductSize = z.infer<typeof ProductSize>;
 
 export const ProductModel = z.object({
+  id: z.string(),
   name: z.string().nonempty(),
   description: z.string(),
   type: ProductType,
@@ -56,8 +57,8 @@ export class Product extends Entity<ProductId, ProductModel> {
   #price: ProductModel["price"];
   #stock: ProductModel["stock"];
 
-  constructor(id: ProductId, model: ProductModel) {
-    super(id);
+  constructor(model: ProductModel) {
+    super(new ProductId(model.id));
     this.#name = model.name;
     this.#description = model.description;
     this.#type = model.type;
@@ -69,6 +70,7 @@ export class Product extends Entity<ProductId, ProductModel> {
   }
   toModel(): ProductModel {
     return {
+      id: this.id.value,
       name: this.#name,
       description: this.#description,
       type: this.#type,
