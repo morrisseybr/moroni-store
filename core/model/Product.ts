@@ -40,7 +40,7 @@ export const ProductModel = z.object({
   type: ProductType,
   gender: ProductGender,
   size: ProductSize,
-  number: z.number().nonnegative().nullable(),
+  number: z.number().nonnegative(),
   price: z.number().nonnegative(),
   stock: z.number().nonnegative(),
 });

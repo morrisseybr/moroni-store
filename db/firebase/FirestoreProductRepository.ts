@@ -24,16 +24,15 @@ export class FirestoreProductRepository extends ProductRepository {
     });
 
   async create(product: Product): Promise<void> {
-    await this.#collection.doc(product.id.value).create(product);
+    const w = await this.#collection.doc(product.id.value).create(product);
   }
   async read(id: ProductId): Promise<Product> {
     const docSnapshot = await this.#collection.doc(id.value).get();
-    const data = docSnapshot.data();
-    if (!data) {
+    const product = docSnapshot.data();
+    if (!product) {
       throw new Error("Document not found");
     }
-    const model = ProductModel.parse(data);
-    return new Product(model);
+    return product;
   }
   async update(product: Product): Promise<void> {
     const doc = this.#collection.doc(product.id.value);

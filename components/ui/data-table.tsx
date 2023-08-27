@@ -65,9 +65,7 @@ export function DataTable<TData extends { id: string }, TValue>({
     }
   }, [table, hasNextPageToFetch, onFetchNextPage, pages.length]);
 
-  const hasNextPage = useMemo(() => {
-    return table.getCanNextPage() || hasNextPageToFetch;
-  }, [table, hasNextPageToFetch]);
+  const hasNextPage = table.getCanNextPage() || hasNextPageToFetch;
 
   return (
     <div>

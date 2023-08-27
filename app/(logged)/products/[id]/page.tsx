@@ -1,5 +1,3 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,39 +12,15 @@ import { Fieldset } from "@/components/ui/fieldset";
 import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { FormEvent } from "react";
+import ProductDetailsForm from "./form";
+import getProduct from "@/actions/get-product";
 
-export default function ProductDetails({ params }: { params: { id: string } }) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const { data: product } = useQuery(["product", params.id], async () => {
-    const response = await axios.get(`/api/products/${params.id}`);
-    return response.data;
-  });
-  const { mutate } = useMutation({
-    mutationFn: (data: any) => {
-      return axios.put("/api/products", data);
-    },
-    onSuccess: () => {
-      toast({
-        title: "Produto atualizado",
-        description: "O produto foi atualizado com sucesso.",
-      });
-      router.push("/products");
-    },
-  });
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    mutate(data);
-  };
-
+export default async function ProductDetails({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const product = (await getProduct(params.id)).toModel();
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -55,7 +29,7 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
           <h3>Editar produto</h3>
         </div>
       </header>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <ProductDetailsForm productId={params.id}>
         <Fieldset>
           <Label htmlFor="name">Nome</Label>
           <Input type="text" name="name" required defaultValue={product.name} />
@@ -136,7 +110,7 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
           <InputCurrency name="price" required defaultValue={product.price} />
         </Fieldset>
         <Button type="submit">Salvar</Button>
-      </form>
+      </ProductDetailsForm>
     </div>
   );
 }

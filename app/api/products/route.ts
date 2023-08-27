@@ -2,6 +2,7 @@ import createProduct from "@/actions/create-product";
 import getProducts from "@/actions/get-products";
 import handleApiError from "@/actions/handle-api-error";
 import verifySessionCookie from "@/actions/verify-session-cookie";
+import { ProductModel } from "@/core/model/Product";
 import { revalidatePath } from "next/cache";
 
 export async function GET(request: Request) {
@@ -23,10 +24,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await verifySessionCookie();
-    await createProduct(await request.json());
+    const json = await request.json();
+    const data = ProductModel.omit({ id: true }).parse(json);
+    const createdProduct = await createProduct(data);
     revalidatePath("/products");
+    return new Response(JSON.stringify(createdProduct.toModel()), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     return handleApiError(error);
   }
-  return new Response(null, { status: 201 });
 }
