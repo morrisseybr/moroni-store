@@ -15,7 +15,8 @@ export interface InputCurrencyProps
 
 export function currencyToNumber(value?: string): number {
   if (!value) return 0;
-  return parseFloat(value.replace(".", "").replace(",", "."));
+  const numericValue = value.split("$")[1] || value;
+  return parseFloat(numericValue.replace(".", "").replace(",", "."));
 }
 
 export function numberToCurrency(value: number): string {

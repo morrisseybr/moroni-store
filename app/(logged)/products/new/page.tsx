@@ -11,28 +11,21 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Fieldset } from "@/components/ui/fieldset";
+import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import {
-  ProductType,
-  ProductGender,
-  ProductSize,
-  ProductModel,
-} from "@/core/model/Product";
-import { InputCurrency } from "@/components/ui/input-currency";
+  InputCurrency,
+  currencyToNumber,
+} from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
-import axios from "axios";
 import { FormEvent } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { CreateProductModel } from "@/actions/create-product";
+import { trpc } from "@/trpc/client";
 
 export default function Product() {
   const router = useRouter();
   const { toast } = useToast();
-  const { mutate, isLoading } = useMutation({
-    mutationFn: (data: CreateProductModel) => {
-      return axios.post("/api/products", data);
-    },
+  const { mutate, isLoading } = trpc.products.create.useMutation({
     onSuccess: () => {
       toast({
         title: "Produto cadastrado",
@@ -45,16 +38,16 @@ export default function Product() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = CreateProductModel.parse({
-      name: formData.get("name"),
-      description: formData.get("description"),
-      type: formData.get("type"),
-      gender: formData.get("gender"),
-      size: formData.get("size"),
+    const data: Parameters<typeof mutate>[0] = {
+      name: formData.get("name") as string,
+      description: formData.get("description") as string,
+      type: formData.get("type") as ProductType,
+      gender: formData.get("gender") as ProductGender,
+      size: formData.get("size") as ProductSize,
       number: Number(formData.get("number")),
       stock: Number(formData.get("stock")),
-      price: Number(formData.get("price")),
-    });
+      price: currencyToNumber(formData.get("price") as string),
+    };
     mutate(data);
   };
 
@@ -124,7 +117,6 @@ export default function Product() {
           <Label htmlFor="number">Número</Label>
           <Input type="number" step={1} min={0} name="number" />
         </Fieldset>
-
         <Fieldset>
           <Label htmlFor="stock">Estoque</Label>
           <Input type="number" step={1} name="stock" required />

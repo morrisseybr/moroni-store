@@ -24,7 +24,7 @@ export class FirestoreProductRepository extends ProductRepository {
     });
 
   async create(product: Product): Promise<void> {
-    const w = await this.#collection.doc(product.id.value).create(product);
+    await this.#collection.doc(product.id.value).create(product);
   }
   async read(id: ProductId): Promise<Product> {
     const docSnapshot = await this.#collection.doc(id.value).get();
@@ -35,8 +35,7 @@ export class FirestoreProductRepository extends ProductRepository {
     return product;
   }
   async update(product: Product): Promise<void> {
-    const doc = this.#collection.doc(product.id.value);
-    await doc.update(product);
+    await this.#collection.doc(product.id.value).set(product);
   }
   async delete(id: ProductId): Promise<void> {
     await this.#collection.doc(id.value).delete({ exists: true });

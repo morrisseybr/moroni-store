@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "@/config/firebase-admin";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import QueryProvider from "@/components/query-provider";
+import TRPCProvider from "@/components/trpc-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,12 +21,12 @@ export default async function RootLayout({
   return (
     <html lang="pt-br" className="dark">
       <body className={inter.className}>
-        <QueryProvider>
+        <TRPCProvider>
           <div className="m-auto p-2 sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl">
             {children}
           </div>
           <Toaster />
-        </QueryProvider>
+        </TRPCProvider>
       </body>
     </html>
   );

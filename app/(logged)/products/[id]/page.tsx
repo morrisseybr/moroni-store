@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,14 +12,14 @@ import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
 import ProductDetailsForm from "./form";
-import getProduct from "@/actions/get-product";
+import { caller } from "@/trpc/server";
 
 export default async function ProductDetails({
   params,
 }: {
   params: { id: string };
 }) {
-  const product = (await getProduct(params.id)).toModel();
+  const product = await caller.products.getById({ id: params.id });
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">
@@ -109,7 +108,6 @@ export default async function ProductDetails({
           <Label htmlFor="price">Preço</Label>
           <InputCurrency name="price" required defaultValue={product.price} />
         </Fieldset>
-        <Button type="submit">Salvar</Button>
       </ProductDetailsForm>
     </div>
   );

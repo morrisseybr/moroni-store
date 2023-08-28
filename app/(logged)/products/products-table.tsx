@@ -3,9 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { ProductModel } from "@/core/model/Product";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { trpc } from "@/trpc/client";
 import { ColumnDef } from "@tanstack/react-table";
-import axios from "axios";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
@@ -31,20 +30,13 @@ export default function ProductsTable({
   firstPage: ProductModel[];
 }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      ["products"],
-      async ({ pageParam }) => {
-        const response = await axios.get<ProductModel[]>("/api/products", {
-          params: {
-            cursor: pageParam,
-          },
-        });
-        return response.data;
-      },
+    trpc.products.list.useInfiniteQuery(
+      {},
       {
         getNextPageParam: (lastPage) => lastPage[lastPage?.length - 1]?.id,
-        keepPreviousData: true,
+        initialCursor: null,
         initialData: { pages: [firstPage], pageParams: [null] },
+        keepPreviousData: true,
       }
     );
   const columns = useMemo<ColumnDef<ProductModel>[]>(
