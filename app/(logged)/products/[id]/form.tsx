@@ -23,6 +23,7 @@ export default function ProductDetailsForm({
         title: "Produto atualizado",
         description: "O produto foi atualizado com sucesso.",
       });
+      router.refresh();
       router.push("/products");
     },
   });
