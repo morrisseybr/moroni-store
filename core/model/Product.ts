@@ -59,14 +59,15 @@ export class Product extends Entity<ProductId, ProductModel> {
 
   constructor(model: ProductModel) {
     super(new ProductId(model.id));
-    this.#name = model.name;
-    this.#description = model.description;
-    this.#type = model.type;
-    this.#gender = model.gender;
-    this.#size = model.size;
-    this.#number = model.number;
-    this.#price = model.price;
-    this.#stock = model.stock;
+    const parsedModel = ProductModel.parse(model);
+    this.#name = parsedModel.name;
+    this.#description = parsedModel.description;
+    this.#type = parsedModel.type;
+    this.#gender = parsedModel.gender;
+    this.#size = parsedModel.size;
+    this.#number = parsedModel.number;
+    this.#price = parsedModel.price;
+    this.#stock = parsedModel.stock;
   }
   toModel(): ProductModel {
     return {
