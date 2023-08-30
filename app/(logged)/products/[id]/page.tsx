@@ -12,14 +12,14 @@ import { ProductType, ProductGender, ProductSize } from "@/core/model/Product";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { BackButton } from "@/components/ui/back-button";
 import ProductDetailsForm from "./form";
-import { caller } from "@/trpc/server";
+import { trpcCaller } from "@/trpc/server";
 
 export default async function ProductDetails({
   params,
 }: {
   params: { id: string };
 }) {
-  const product = await caller.products.getById({ id: params.id });
+  const product = await trpcCaller.products.getById({ id: params.id });
   return (
     <div className="flex flex-col gap-4">
       <header className="py-2 mb-2 flex justify-between items-center">

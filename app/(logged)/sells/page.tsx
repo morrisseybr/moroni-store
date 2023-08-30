@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import SellsTable from "./components/sells-table";
-import getSellsSummary from "@/actions/get-sells-summary copy";
+import SellsTable from "./sells-table";
+import { trpcCaller } from "@/trpc/server";
 
 export default async function SellsPage() {
-  const sellsSummary = await getSellsSummary();
+  const firstPage = await trpcCaller.sells.list({ cursor: null });
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="flex justify-between items-center">
@@ -14,7 +14,7 @@ export default async function SellsPage() {
           Nova venda
         </Link>
       </div>
-      <SellsTable sellsSummary={sellsSummary} />
+      <SellsTable firstPage={firstPage} />
     </div>
   );
 }
