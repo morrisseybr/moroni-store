@@ -1,14 +1,17 @@
+"use client";
+
 import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Fieldset } from "@/components/ui/fieldset";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { trpc } from "@/trpc/client";
+import { TRPCInputs, trpc } from "@/trpc/client";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import SellBagTable, { SellBag } from "./sell-bag-table";
 
-export default async function Sell() {
+export default function Sell() {
   const router = useRouter();
   const { toast } = useToast();
   const { mutate, isLoading } = trpc.sells.create.useMutation({
@@ -21,17 +24,80 @@ export default async function Sell() {
     },
   });
 
+  const [sellBag, setSellBag] = useState<SellBag>([]);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data: Parameters<typeof mutate>[0] = {
+    const data: TRPCInputs["sells"]["create"] = {
+      date: new Date(),
       customer: {
         name: formData.get("customerName") as string,
         phone: formData.get("customerPhone") as string,
         email: formData.get("customerEmail") as string,
       },
+      bag: [],
+      discount: 0,
+      tax: 0,
+      total: 0,
+      payment: {
+        method: "cash",
+        change: 0,
+      },
     };
     mutate(data);
+  };
+
+  const handleAddQuantity = (itemId: string) => {
+    setSellBag((prev) => {
+      const itemIndex = prev.findIndex((item) => item.product.id === itemId);
+      const item = prev[itemIndex];
+      const newQuantity = item.quantity + 1;
+      const newItem = {
+        ...item,
+        quantity: newQuantity,
+      };
+      const newSellBag = [...prev];
+      newSellBag[itemIndex] = newItem;
+      return newSellBag;
+    });
+  };
+
+  const handleSubtractQuantity = (itemId: string) => {
+    setSellBag((prev) => {
+      const itemIndex = prev.findIndex((item) => item.product.id === itemId);
+      const item = prev[itemIndex];
+      const newQuantity = item.quantity - 1;
+      const newItem = {
+        ...item,
+        quantity: newQuantity,
+      };
+      const newSellBag = [...prev];
+      newSellBag[itemIndex] = newItem;
+      return newSellBag;
+    });
+  };
+
+  const handlePriceChange = (itemId: string, value?: string) => {
+    setSellBag((prev) => {
+      const itemIndex = prev.findIndex((item) => item.product.id === itemId);
+      const item = prev[itemIndex];
+      const newPrice = Number(value);
+      const newItem = {
+        ...item,
+        price: newPrice,
+      };
+      const newSellBag = [...prev];
+      newSellBag[itemIndex] = newItem;
+      return newSellBag;
+    });
+  };
+
+  const handleRemoveItem = (itemId: string) => {
+    setSellBag((prev) => {
+      const newSellBag = prev.filter((item) => item.product.id !== itemId);
+      return newSellBag;
+    });
   };
 
   return (
@@ -43,7 +109,7 @@ export default async function Sell() {
         </div>
       </header>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <h2>Dados do cliente</h2>
+        <h4>Dados do cliente</h4>
         <Fieldset>
           <Label htmlFor="customerName">Nome</Label>
           <Input type="text" name="customerName" required />
@@ -56,7 +122,14 @@ export default async function Sell() {
           <Label htmlFor="customerEmail">E-mail</Label>
           <Input type="text" name="customerEmail" />
         </Fieldset>
-        <hr />
+        <h4>Sacola</h4>
+        <SellBagTable
+          sellBag={sellBag}
+          onAddQuantity={handleAddQuantity}
+          onSubtractQuantity={handleSubtractQuantity}
+          onPriceChange={handlePriceChange}
+          onRemoveItem={handleRemoveItem}
+        />
         <Button type="submit" disabled={isLoading} loading={isLoading}>
           Salvar
         </Button>

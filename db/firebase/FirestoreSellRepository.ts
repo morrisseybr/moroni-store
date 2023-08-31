@@ -3,7 +3,7 @@ import { Sell, SellId, SellRepository, SellModel } from "@/core/model/Sell";
 import { getFirestore } from "firebase-admin/firestore";
 
 export class FirestoreSellRepository extends SellRepository {
-  static readonly SELL_PATH = "products";
+  static readonly SELL_PATH = "sells";
 
   #collection = getFirestore(app)
     .collection(FirestoreSellRepository.SELL_PATH)

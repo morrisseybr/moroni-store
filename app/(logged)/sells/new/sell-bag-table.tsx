@@ -1,18 +1,21 @@
 "use client";
 
-import { CreateSellFormData } from "@/actions/create-sell";
 import { DataTable } from "@/components/ui/data-table";
 import { InputCurrency } from "@/components/ui/input-currency";
 import { TableActionButton, TableActions } from "@/components/ui/table";
-import { ProductSummary } from "@/model/Product";
-import { SellBag } from "@/model/Sell";
+import { ProductModel } from "@/core/model/Product";
 import { ColumnDef } from "@tanstack/react-table";
 import { Minus, Plus, Trash } from "lucide-react";
 import { useMemo } from "react";
 
+export type SellBag = {
+  product: ProductModel;
+  price: number;
+  quantity: number;
+}[];
+
 type SellBagTableProps = {
-  productsSummary: ProductSummary[];
-  sellBag: CreateSellFormData["bag"];
+  sellBag: SellBag;
   onAddQuantity: (itemId: string) => void;
   onSubtractQuantity: (itemId: string) => void;
   onPriceChange: (itemId: string, value?: string) => void;
@@ -20,21 +23,18 @@ type SellBagTableProps = {
 };
 
 export default function SellBagTable({
-  productsSummary,
   sellBag,
   onAddQuantity,
   onSubtractQuantity,
   onPriceChange,
   onRemoveItem,
 }: SellBagTableProps) {
-  const sellBagWithId = useMemo(
-    () =>
-      sellBag.map((sellBag) => ({
-        ...sellBag,
-        id: sellBag.productId,
-      })),
-    [sellBag]
-  );
+  const sellBagWithId = useMemo(() => {
+    return sellBag.map((item) => ({
+      ...item,
+      id: item.product.id,
+    }));
+  }, [sellBag]);
 
   const columns = useMemo<ColumnDef<(typeof sellBagWithId)[number]>[]>(
     () => [
@@ -46,24 +46,18 @@ export default function SellBagTable({
         header: "Quantidade",
         accessorKey: "quantity",
         cell: ({ row }) => {
-          const actualProductSummary = productsSummary.find(
-            (product) => product.id === row.original.productId
-          );
           return (
             <TableActions justify="start">
               <TableActionButton
-                disabled={
-                  actualProductSummary &&
-                  row.original.quantity >= actualProductSummary.stock
-                }
-                onClick={() => onAddQuantity(row.original.id)}
+                disabled={row.original.quantity >= row.original.product.stock}
+                onClick={() => onAddQuantity(row.original.product.id)}
               >
                 <Plus />
               </TableActionButton>
               <span>{row.original.quantity}</span>
               <TableActionButton
                 disabled={row.original.quantity <= 1}
-                onClick={() => onSubtractQuantity(row.original.id)}
+                onClick={() => onSubtractQuantity(row.original.product.id)}
               >
                 <Minus />
               </TableActionButton>
@@ -80,7 +74,7 @@ export default function SellBagTable({
               <InputCurrency
                 value={row.original.price}
                 onValueChange={(value) => {
-                  onPriceChange(row.original.id, value);
+                  onPriceChange(row.original.product.id, value);
                 }}
               />
             </TableActions>
@@ -93,7 +87,9 @@ export default function SellBagTable({
         cell: ({ row }) => {
           return (
             <TableActions>
-              <TableActionButton onClick={() => onRemoveItem(row.original.id)}>
+              <TableActionButton
+                onClick={() => onRemoveItem(row.original.product.id)}
+              >
                 <Trash />
               </TableActionButton>
             </TableActions>
@@ -101,13 +97,7 @@ export default function SellBagTable({
         },
       },
     ],
-    [
-      onAddQuantity,
-      onPriceChange,
-      onRemoveItem,
-      onSubtractQuantity,
-      productsSummary,
-    ]
+    [onAddQuantity, onPriceChange, onRemoveItem, onSubtractQuantity]
   );
 
   return (

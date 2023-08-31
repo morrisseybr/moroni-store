@@ -20,17 +20,30 @@ import {
 import { Button } from "./button";
 import { useCallback, useMemo, useState } from "react";
 
-interface DataTableProps<TData extends { id: string }, TValue> {
+type DataTableProps<TData extends { id: string }, TValue> = {
   columns: ColumnDef<TData, TValue>[];
-  pages: TData[][];
-  onFetchNextPage: () => Promise<void>;
-  hasNextPageToFetch: boolean;
-  isFetchingNextPage?: boolean;
-  pageSize?: number;
-}
+} & (
+  | {
+      data: TData[];
+      pages?: never;
+      onFetchNextPage?: never;
+      hasNextPageToFetch?: never;
+      isFetchingNextPage?: never;
+      pageSize?: never;
+    }
+  | {
+      data?: never;
+      pages: TData[][];
+      onFetchNextPage: () => Promise<void>;
+      hasNextPageToFetch: boolean;
+      isFetchingNextPage?: boolean;
+      pageSize?: number;
+    }
+);
 
 export function DataTable<TData extends { id: string }, TValue>({
   columns,
+  data,
   pages,
   onFetchNextPage,
   hasNextPageToFetch,
@@ -42,16 +55,18 @@ export function DataTable<TData extends { id: string }, TValue>({
     pageSize: pageSize,
   });
   const table = useReactTable({
-    data: pages[pagination.pageIndex] || [],
-    pageCount: pages.length || 1,
+    data: data || pages[pagination.pageIndex] || [],
+    pageCount: data ? undefined : pages.length || 1,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    state: {
-      pagination,
-    },
-    onPaginationChange: setPagination,
+    manualPagination: !data,
+    state: data
+      ? undefined
+      : {
+          pagination,
+        },
+    onPaginationChange: data ? undefined : setPagination,
   });
 
   const handleNextPage = useCallback(async () => {
@@ -63,7 +78,7 @@ export function DataTable<TData extends { id: string }, TValue>({
       table.setPageCount(pages.length);
       table.nextPage();
     }
-  }, [table, hasNextPageToFetch, onFetchNextPage, pages.length]);
+  }, [table, hasNextPageToFetch, onFetchNextPage, pages]);
 
   const hasNextPage = table.getCanNextPage() || hasNextPageToFetch;
 

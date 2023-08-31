@@ -11,6 +11,7 @@ export const SellModel = z.object({
   bag: z.array(
     z.object({
       productId: z.string(),
+      price: z.number().nonnegative(),
       quantity: z.number().nonnegative(),
     })
   ),
